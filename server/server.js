@@ -1,18 +1,20 @@
 require('./config/config');
 
-var _ = require('lodash');
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID} = require('mongodb');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
-var {mongoose} = require('./db/mongoose');
-var {Todo} = require('./models/todo');
-var {User} = require('./models/user');
+const {mongoose} = require('./db/mongoose');
+const {Todo} = require('./models/todo');
+const {User} = require('./models/user');
 
-var app = express();
-var port = process.env.PORT;
+const app = express();
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
+
+// Routes for /todos
 
 app.post('/todos', (req, res) => {
 	var todo = new Todo({
@@ -21,21 +23,21 @@ app.post('/todos', (req, res) => {
 
 	todo.save().then((todo) => {
 		res.send({todo});
-	}, (err) => {
+	}).catch((err) => {
 		res.status(400).send(err);
 	});
 });
 
 app.get('/todos', (req, res) => {
 	Todo.find().then((todos) => {
-		res.send({todos})
-	}, (err) => {
+		res.send({todos});
+	}).catch((err) => {
 		res.status(400).send(err);
 	});
 });
 
 app.get('/todos/:id', (req, res) => {
-	var id = req.params.id;
+	const id = req.params.id;
 
 	if(!ObjectID.isValid(id)) {
 		return res.status(404).send();
@@ -53,7 +55,7 @@ app.get('/todos/:id', (req, res) => {
 });
 
 app.delete('/todos/:id', (req, res) => {
-	var id = req.params.id;
+	const id = req.params.id;
 
 	if(!ObjectID.isValid(id)) {
 		return res.status(404).send();
@@ -71,8 +73,8 @@ app.delete('/todos/:id', (req, res) => {
 });
 
 app.patch('/todos/:id', (req, res) => {
-	var id = req.params.id;
-	var body = _.pick(req.body, ['text', 'completed']);
+	const id = req.params.id;
+	const body = _.pick(req.body, ['text', 'completed']);
 
 	if(!ObjectID.isValid(id)) {
 		return res.status(404).send();
@@ -91,6 +93,21 @@ app.patch('/todos/:id', (req, res) => {
 		}
 
 		res.send({todo});
+	}).catch((err) => {
+		res.status(400).send(err);
+	});
+});
+
+// Routes for /users
+
+app.post('/users', (req, res) => {
+	const body = _.pick(req.body, ['email', 'password']);
+	const user = new User(body);
+
+	user.save().then(() => {
+		return user.generateAuthToken();
+	}).then((token) => {
+		res.header('x-auth', token).send(user);
 	}).catch((err) => {
 		res.status(400).send(err);
 	});

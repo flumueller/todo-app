@@ -1,11 +1,11 @@
-var expect = require('expect');
-var request = require('supertest');
-var {ObjectID} = require('mongodb');
+const expect = require('expect');
+const request = require('supertest');
+const {ObjectID} = require('mongodb');
 
-var {app} = require('./../server');
-var {Todo} = require('./../models/todo');
+const {app} = require('./../server');
+const {Todo} = require('./../models/todo');
 
-var todos = [{
+const todos = [{
 	_id: new ObjectID(),
 	text: 'First test todo'
 }, {
@@ -23,7 +23,7 @@ beforeEach((done) => {
 
 describe('POST /todos', () => {
 	it('should create a new todo', (done) => {
-		var text = 'My new todo';
+		const text = 'My new todo';
 
 		request(app)
 			.post('/todos')
@@ -87,7 +87,7 @@ describe('GET /todos/:id', () => {
 	});
 
 	it('should return a 404 if todo not found', (done) => {
-		var hexId = new ObjectID().toHexString();
+		const hexId = new ObjectID().toHexString();
 
 		request(app)
 			.get(`/todos/${hexId}`)
@@ -96,7 +96,8 @@ describe('GET /todos/:id', () => {
 	});
 
 	it('should return a 404 if object is invalid', (done) => {
-		var id = new ObjectID();
+		const id = new ObjectID();
+		
 		request(app)
 			.get('/todos/123')
 			.expect(404)
@@ -106,7 +107,7 @@ describe('GET /todos/:id', () => {
 
 describe('DELETE /todos/:id', () => {
 	it('should remove a todo', (done) => {
-		var hexId = todos[1]._id.toHexString();
+		const hexId = todos[1]._id.toHexString();
 
 		request(app)
 			.delete(`/todos/${hexId}`)
@@ -127,7 +128,7 @@ describe('DELETE /todos/:id', () => {
 	});
 
 	it('should return a 404 if todo not found', (done) => {
-		var hexId = new ObjectID().toHexString();
+		const hexId = new ObjectID().toHexString();
 
 		request(app)
 			.delete(`/todos/${hexId}`)
@@ -145,8 +146,8 @@ describe('DELETE /todos/:id', () => {
 
 describe('PATCH /todos/:id', () => {
 	it('should update the todo', (done) => {
-		var hexId = todos[0]._id.toHexString();
-		var text = 'The new content';
+		const hexId = todos[0]._id.toHexString();
+		const text = 'The new content';
 
 		request(app)
 			.patch(`/todos/${hexId}`)
@@ -164,8 +165,8 @@ describe('PATCH /todos/:id', () => {
 	});
 
 	it('should clear completedAt when todo is not completed', (done) => {
-		var hexId = todos[1]._id.toHexString();
-		var text = 'The absolutly new content!';
+		const hexId = todos[1]._id.toHexString();
+		const text = 'The absolutly new content!';
 
 		request(app)
 			.patch(`/todos/${hexId}`)
@@ -183,7 +184,7 @@ describe('PATCH /todos/:id', () => {
 	});
 
 	it('should return a 404 if todo not found', (done) => {
-		var hexId = new ObjectID().toHexString();
+		const hexId = new ObjectID().toHexString();
 
 		request(app)
 			.patch(`/todos/${hexId}`)
